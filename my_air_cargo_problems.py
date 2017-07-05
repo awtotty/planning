@@ -141,6 +141,12 @@ class AirCargoProblem(Problem):
         """
         # TODO implement
         possible_actions = []
+        kb = PropKB()
+        kb.tell(decode_state(state, self.state_map).pos_sentence())
+
+        for action in self.get_actions():
+            if action.check_precond(kb, action.args): # if needed, ignore args and copy code from have_cake
+                possible_actions.append(action)
         return possible_actions
 
     def result(self, state: str, action: Action):
