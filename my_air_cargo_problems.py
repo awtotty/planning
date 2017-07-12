@@ -215,8 +215,16 @@ class AirCargoProblem(Problem):
         executed.
         """
         # TODO implement (see Russell-Norvig Ed-3 10.2.3  or Russell-Norvig Ed-2 11.2)
-        count = 0
-        return count
+
+        # What is the minimum number of actions needed to satisfy all goals?
+        # The minimum is the number of goals unsatisfied by the current state
+
+        # If the current state satisfies goals, remove them from the goal list
+        if self.goal_test(node.state):
+            self.goal.remove(self.state_map)
+
+        # The minimum number of remaining moves is the number of remaining goals
+        return len(self.goal)
 
 
 def air_cargo_p1() -> AirCargoProblem:
