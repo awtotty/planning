@@ -547,4 +547,12 @@ class PlanningGraph():
         level_sum = 0
         # TODO implement
         # for each goal in the problem, determine the level cost, then add them together
+        for goal in problem.goal:
+            goal_not_found = True
+            while goal_not_found:
+                for level in s_levels:
+                    for state in level:
+                        if problem.goal_test(state.symbol):
+                            level_sum += level
+                            goal_not_found = False
         return level_sum
