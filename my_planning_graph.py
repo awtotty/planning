@@ -464,8 +464,14 @@ class PlanningGraph():
         :param node_a2: PgNode_a
         :return: bool
         """
-
         # TODO test for Competing Needs between nodes
+        action_a1 = node_a1.action
+        action_a2 = node_a2.action
+
+        # If a1 precondition matches a2 preconditions
+        if [effect for effect in action_a1.precond_neg if effect in action_a2.precond_neg] or
+            [effect for effect in action_a1.precond_pos if effect in action_a2.precond_pos]
+            return True
         return False
 
     def update_s_mutex(self, nodeset: set):
