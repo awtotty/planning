@@ -511,14 +511,9 @@ class PlanningGraph():
         :param node_s2: PgNode_s
         :return: bool
         """
-        # TODO not working
         # TODO test for negation between nodes
-        # Negate s2
-        neg_node_s2 = node_s2
-        neg_node_s2.is_pos = -neg_node_s2.is_pos
 
-        # Return True if s1 and negated s2 are equal
-        return node_s1.__eq__(neg_node_s2)
+        return (node_s1.symbol == node_s2.symbol and node_s1.is_pos != node_s2.is_pos)
 
 
     def inconsistent_support_mutex(self, node_s1: PgNode_s, node_s2: PgNode_s):
