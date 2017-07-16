@@ -311,6 +311,8 @@ class PlanningGraph():
         #   to see if a proposed PgNode_a has prenodes that are a subset of the previous S level.  Once an
         #   action node is added, it MUST be connected to the S node instances in the appropriate s_level set.
 
+        # Append an empty set to appropriate level in a_levels
+        self.a_levels.append(set())
 
         # Determine which actions to add
         for action in self.all_actions:
@@ -318,7 +320,7 @@ class PlanningGraph():
 
             # Check if all prereqs for action are in planning graph
             if a_node.prenodes.issubset(self.s_levels[level]):
-                # Add those actions to the planning graph
+                # Add those actions to the planning graph set
                 self.a_levels[level].add(a_node)
 
                 # Connect each PgNode_a to the previous S literal level
@@ -346,11 +348,14 @@ class PlanningGraph():
         #   all of the new S nodes as children of all the A nodes that could produce them, and likewise add the A nodes to the
         #   parent sets of the S nodes
 
+        # Append an empty set to appropriate level in s_levels
+        self.s_levels.append(set())
 
         # Determine which literals to add
         for a_node in self.a_levels[level-1]:
             for s_node in a_node.effnodes:
                 # Add all elements of effnodes to s_levels[level]
+
                 self.s_levels[level].add(s_node)
 
                 # Connect each PgNode_s to the previous action node
@@ -420,8 +425,8 @@ class PlanningGraph():
         action_a2 = node_a2.action
 
         # If elements in intersection of (a1_add and a2_rem) or in intersection of (a1_rem and a2_add)
-        if [effect for effect in action_a1.effect_add if effect in action_a2.effect_rem] or
-            [effect for effect in action_a1.effect_rem if effect in action_a2.effect_add]:
+        if ( [effect for effect in action_a1.effect_add if effect in action_a2.effect_rem] or
+             [effect for effect in action_a1.effect_rem if effect in action_a2.effect_add] ):
             return True
 
         return False
@@ -445,12 +450,12 @@ class PlanningGraph():
         action_a2 = node_a2.action
 
         # If a1 effects negate a2 preconditions
-        if [effect for effect in action_a1.effect_add if effect in action_a2.precond_neg] or
-            [effect for effect in action_a1.effect_rem if effect in action_a2.precond_pos]
+        if ( [effect for effect in action_a1.effect_add if effect in action_a2.precond_neg] or
+             [effect for effect in action_a1.effect_rem if effect in action_a2.precond_pos] ):
             return True
         # If a2 effects negate a1 preconditions
-        if [effect for effect in action_a2.effect_add if effect in action_a1.precond_neg] or
-            [effect for effect in action_a2.effect_rem if effect in action_a1.precond_pos]
+        if ( [effect for effect in action_a2.effect_add if effect in action_a1.precond_neg] or
+             [effect for effect in action_a2.effect_rem if effect in action_a1.precond_pos] ):
             return True
         return False
 
@@ -465,14 +470,14 @@ class PlanningGraph():
         :return: bool
         """
         # TODO test for Competing Needs between nodes
-        action_a1 = node_a1.action
-        action_a2 = node_a2.action
 
-        # If a1 precondition matches a2 preconditions
-        if [effect for effect in action_a1.precond_neg if effect in action_a2.precond_neg] or
-            [effect for effect in action_a1.precond_pos if effect in action_a2.precond_pos]
-            return True
+        # Check if parents are mutex
+        for parent_a1 in node_a1.parents:
+            for parent_a2 in node_a2.parents:
+                if parent_a1.is_mutex(parent_a2):
+                    return True
         return False
+
 
     def update_s_mutex(self, nodeset: set):
         """ Determine and update sibling mutual exclusion for S-level nodes
@@ -506,6 +511,7 @@ class PlanningGraph():
         :param node_s2: PgNode_s
         :return: bool
         """
+        # TODO not working
         # TODO test for negation between nodes
         # Negate s2
         neg_node_s2 = node_s2
@@ -547,12 +553,12 @@ class PlanningGraph():
         level_sum = 0
         # TODO implement
         # for each goal in the problem, determine the level cost, then add them together
-        for goal in problem.goal:
+        for goal in self.problem.goal:
             goal_not_found = True
             while goal_not_found:
-                for level in s_levels:
+                for level in self.s_levels:
                     for state in level:
-                        if problem.goal_test(state.symbol):
+                        if self.problem.goal_test(state.symbol):
                             level_sum += level
                             goal_not_found = False
         return level_sum
