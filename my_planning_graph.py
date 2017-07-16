@@ -312,14 +312,19 @@ class PlanningGraph():
         #   action node is added, it MUST be connected to the S node instances in the appropriate s_level set.
 
         # Determine which actions to add
+        for action in self.all_actions:
+            a_node = PgNode_a(action)
 
+            # Check if all prereqs for action are in planning graph
+            if a_node.prenodes.issubset(self.s_levels[level]):
+                # Add those actions to the planning graph
+                self.a_levels[level].add(a_node)
 
-        # Add those actions
-
-
-        # Connect each PgNode_a to the previous S literal level
-
-
+                # Connect each PgNode_a to the previous S literal level
+                for s_node in self.s_levels[level]:
+                    if s_node in a_node.prenodes:
+                        a_node.parents.add(s_node)
+                        s_node.children.add(a_node)
 
 
     def add_literal_level(self, level):
