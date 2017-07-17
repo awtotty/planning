@@ -139,7 +139,6 @@ class AirCargoProblem(Problem):
         :return: list of Action objects
         """
 
-        # TODO Comment
         possible_actions = []
         kb = PropKB()
         kb.tell(decode_state(state, self.state_map).pos_sentence())
@@ -159,7 +158,6 @@ class AirCargoProblem(Problem):
         :return: resulting state after action
         """
 
-        # TODO Comment
         new_state = FluentState([], [])
         old_state = decode_state(state, self.state_map)
 
@@ -214,12 +212,9 @@ class AirCargoProblem(Problem):
         conditions by ignoring the preconditions required for an action to be
         executed.
         """
-        # TODO implement (see Russell-Norvig Ed-3 10.2.3  or Russell-Norvig Ed-2 11.2)
-
         # What is the minimum number of actions needed to satisfy all goals?
         # The minimum is the number of goals unsatisfied by the current state
 
-        # TODO figure this out
         goals = set(self.goal)
         current_state = set(decode_state(node.state, self.state_map).pos)
         return len(goals - current_state)
