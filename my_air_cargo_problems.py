@@ -219,12 +219,10 @@ class AirCargoProblem(Problem):
         # What is the minimum number of actions needed to satisfy all goals?
         # The minimum is the number of goals unsatisfied by the current state
 
-        # If the current state satisfies goals, remove them from the goal list
-        if self.goal_test(node.state):
-            self.goal.remove(self.state_map)
-
-        # The minimum number of remaining moves is the number of remaining goals
-        return len(self.goal)
+        # TODO figure this out
+        goals = set(self.goal)
+        current_state = set(decode_state(node.state, self.state_map).pos)
+        return len(goals - current_state)
 
 
 def air_cargo_p1() -> AirCargoProblem:
